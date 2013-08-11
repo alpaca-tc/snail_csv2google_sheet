@@ -1,6 +1,8 @@
 require 'csv'
 require 'bigdecimal'
+require 'bigdecimal'
 require 'active_support/all'
+require 'core_ext/vim'
 
 HOURLY_YEN = 1_200
 

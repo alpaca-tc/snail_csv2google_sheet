@@ -6,8 +6,8 @@ function! s:initialize() "{{{
 
   ruby << EOF
   plugin_root_path = VIM.evaluate('g:snail_csv2google_sheet_plugin_root_dir')
-  lib_path = File.expand_path("#{plugin_root_path}/lib")
-  require "#{lib_path}/snail_csv2google_sheet.rb"
+  $: << File.expand_path("#{plugin_root_path}/lib")
+  require 'snail_csv2google_sheet.rb'
 EOF
 endfunction "}}}
 
@@ -17,6 +17,7 @@ function! snail_csv2google_sheet#convert(path) "{{{
   sum = 0
   path = VIM.evaluate('a:path')
   snail = SnailTable.new(path)
+  result = ''
   snail.tasks.select { |task| task.is_completed? }.each do |task|
     column = []
     column << task.start_date
@@ -28,10 +29,13 @@ function! snail_csv2google_sheet#convert(path) "{{{
     column << (task.time_spent.to_work_time * HOURLY_YEN).to_i
     column << task.title
     sum += (task.time_spent.to_work_time * HOURLY_YEN).to_i
-    puts column.join("\t")
+    result += column.join("\t")
   end
 
   puts "今日もお疲れさま・T・"
   puts "#{sum}円の稼ぎだぜい！"
+  VIM.let('result', result)
 EOF
+
+  call snail#util#set_clipboard(result)
 endfunction "}}}
