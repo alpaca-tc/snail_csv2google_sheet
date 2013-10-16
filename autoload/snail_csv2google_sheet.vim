@@ -17,6 +17,7 @@ function! snail_csv2google_sheet#convert(path) "{{{
   sum = 0
   path = VIM.evaluate('a:path')
   snail = SnailTable.new(path)
+  yen_per_hour = VIM.get('g:snail_csv2google_sheet_hourly_rete')
   result = ''
   snail.tasks.select { |task| task.is_completed? }.each do |task|
     column = []
@@ -25,17 +26,16 @@ function! snail_csv2google_sheet#convert(path) "{{{
     column << nil
     column << nil
     column << task.time_spent.to_work_time
-    column << HOURLY_YEN
-    column << (task.time_spent.to_work_time * HOURLY_YEN).to_i
+    column << yen_per_hour
+    column << (task.time_spent.to_work_time * yen_per_hour).to_i
     column << task.title
-    sum += (task.time_spent.to_work_time * HOURLY_YEN).to_i
-    result += column.join("\t")
+    puts column.join("\t")
+    sum += (task.time_spent.to_work_time * yen_per_hour).to_i
+    result += column.join("\t") + "\n"
   end
 
   puts "今日もお疲れさま・T・"
   puts "#{sum}円の稼ぎだぜい！"
-  VIM.let('result', result)
+  VIM.command("let @* = '#{result}'")
 EOF
-
-  call snail#util#set_clipboard(result)
 endfunction "}}}

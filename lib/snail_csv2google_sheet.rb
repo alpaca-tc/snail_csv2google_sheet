@@ -4,13 +4,11 @@ require 'bigdecimal'
 require 'active_support/all'
 require 'core_ext/vim'
 
-HOURLY_YEN = 1_200
-
 class SnailTable
   attr_accessor :reader, :header
 
   def initialize(path)
-    @reader = CSV.open(path, "r") 
+    @reader = CSV.open(path, 'r')
     @reader.shift
   end
 
@@ -40,7 +38,7 @@ class SnailRow
     return @hash_row if @hash_row
 
     @hash_row = {}
-    @original_row.each_with_index do |value, idx| 
+    @original_row.each_with_index do |value, idx|
       @hash_row[HEADERS[idx]] = convert_value_to_ruby_class(value)
     end
 
@@ -48,8 +46,9 @@ class SnailRow
   end
 
   private
+
   def convert_value_to_ruby_class(value)
-    if /(?<hour>\d{2}):(?<minute>\d{2}):(?<second>\d{2})/ =~ value 
+    if /(?<hour>\d{2}):(?<minute>\d{2}):(?<second>\d{2})/ =~ value
       Time.new(TODAY.year, TODAY.month, TODAY.day, hour, minute, second)
     elsif /\d{4}-\d{2}-\d{2}/ =~ value
       Date.parse(value)
@@ -63,7 +62,7 @@ class SnailRow
   end
 
   def method_missing(action, *args)
-    if /is_(?<status_str>.*?)\?$/ =~ action #=> is_completed?, is_overdue?
+    if /is_(?<status_str>.*?)\?$/ =~ action
       return status == status_str.camelize
     end
 
@@ -77,4 +76,3 @@ class Time
     (hour.to_f + (min / 60.0)).round(2)
   end
 end
-
