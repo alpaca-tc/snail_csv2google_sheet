@@ -1,4 +1,4 @@
-function! snail#util#set_clipboard(text) "{{{
+function! snail#util#to_clipboard(text) " {{{
   if exists('g:gist_clip_command')
     call system(g:gist_clip_command, a:text)
   elseif has('unix') && !has('xterm_clipboard')

@@ -1,8 +1,10 @@
+require 'json'
+
 module VIM
   # escape ruby object
   class << self
     def encode
-      evaluate("&encoding")
+      evaluate('&encoding')
     end
 
     def let(name, value)
@@ -12,15 +14,15 @@ module VIM
 
     def get(name)
       value = evaluate(name)
-      if value.is_a? String
-        value.force_encoding(encode) 
+      if value.is_a?(String)
+        value.force_encoding(encode)
       else
         value
       end
     end
 
     def debug(name_or_message, message = nil)
-      name = message ? name_or_message : "_"
+      name = message ? name_or_message : '_'
       message ||= name_or_message
       let("g:alpaca_english#debug.#{name}", message)
     end
