@@ -21,21 +21,22 @@ function! snail_csv2google_sheet#convert(path) "{{{
   result = ''
   snail.tasks.select { |task| task.is_completed? }.each do |task|
     column = []
+    payroll = (task.time_spent.to_work_time * yen_per_hour).to_i
+    sum += payroll
+
     column << task.start_date
-    column << nil
-    column << nil
-    column << nil
-    column << task.time_spent.to_work_time
-    column << yen_per_hour
-    column << (task.time_spent.to_work_time * yen_per_hour).to_i
     column << task.title
+    column << task.time_spent.to_work_time
+    column << payroll
+
     puts column.join("\t")
-    sum += (task.time_spent.to_work_time * yen_per_hour).to_i
     result += column.join("\t") + "\n"
   end
 
   puts "今日もお疲れさま・T・"
   puts "#{sum}円の稼ぎだぜい！"
-  VIM.command("let @* = '#{result}'")
+  VIM.command("let result = '#{result}'")
 EOF
+
+  call snail#util#set_clipboard(result)
 endfunction "}}}
